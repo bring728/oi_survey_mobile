@@ -77,12 +77,14 @@
             return array;
         }
 
+        let questionNumber = 1;
+
         for (let q of imageIndices) {
             let imageOrder = shuffleArray([...Array(basePaths.length).keys()]);
             let questionDiv = document.createElement("div");
         
             questionDiv.innerHTML = `
-                <h3>Question ${q}: 4장의 이미지 중 하얀색 토끼가 가장 자연스럽게 삽입된 이미지를 골라주세요.</h3>
+                <h3>Question ${questionNumber}: 4장의 이미지 중 하얀색 토끼가 가장 자연스럽게 삽입된 이미지를 골라주세요.</h3>
                 <div class="image-container">
                     ${imageOrder.map(i => `
                         <div class="image-item">
@@ -94,6 +96,7 @@
                 </div>
             `;
             document.getElementById("questions").appendChild(questionDiv);
+            questionNumber++; // 문제 번호 증가
         }
         function submitSelection() {
             let results = {};
