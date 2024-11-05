@@ -1,49 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Image Selection Survey</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selection Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        /* 이미지 아이템 스타일 */
+        .image-item {
+            text-align: center;
+            margin-bottom: 20px;
+            flex: 1 1 45%; /* 이미지가 각 행에서 두 개씩 배치되도록 설정 */
+            max-width: 45%; /* 최대 너비 설정 */
+        }
+        
+        /* 모바일 화면에서 정렬 */
+        @media (max-width: 768px) {
             .image-container {
-                display: flex;
-                flex-direction: row; /* 기본: 가로 정렬 */
-                justify-content: space-around;
-                margin-top: 20px;
-                flex-wrap: wrap; /* 모바일에서 자동으로 줄 바꿈 */
+                justify-content: center; /* 중앙 정렬 */
             }
             .image-item {
-                text-align: center;
-                margin-bottom: 20px; /* 각 이미지 사이 간격 */
+                flex: 1 1 45%; /* 한 행에 두 개의 이미지가 들어가도록 설정 */
+                max-width: 45%; /* 최대 너비 설정 */
             }
-            .image-item img {
-                width: 90%; /* 모바일에서 이미지 너비를 더 좁게 조정 */
-                height: auto; /* 비율 유지 */
-                max-width: 400px; /* 최대 너비 제한 */
-            }
-            #submitBtn {
-                margin-top: 20px;
-                padding: 10px 20px;
-                font-size: 16px;
-            }
-            /* 모바일 화면에 맞춰 레이아웃 변경 */
-            @media (max-width: 768px) {
-                .image-container {
-                    flex-direction: column; /* 모바일: 세로 정렬 */
-                    align-items: center; /* 중앙 정렬 */
-                }
-                .image-item img {
-                    width: 100%; /* 모바일에서 이미지 너비를 100%로 조정 */
-                    max-width: 350px; /* 최대 너비 조정 */
-                }
-            }
-        </style>
-    </head>
-    
+        }
+    </style>
+</head>
+
 <body>
 
     <form id="surveyForm">
@@ -76,10 +69,11 @@
         }
 
         for (let q of imageIndices) {
-            let imageOrder = shuffleArray([...Array(basePaths.length).keys()]); 
+            let imageOrder = shuffleArray([...Array(basePaths.length).keys()]);
             let questionDiv = document.createElement("div");
-
+        
             questionDiv.innerHTML = `
+                <h3>Question ${q}: 4장의 이미지 중 하얀색 토끼가 가장 자연스럽게 삽입된 이미지를 골라주세요.</h3>
                 <div class="image-container">
                     ${imageOrder.map(i => `
                         <div class="image-item">
@@ -92,32 +86,13 @@
             `;
             document.getElementById("questions").appendChild(questionDiv);
         }
-        window.onload = function() {
-            if (localStorage.getItem('surveySubmitted') === 'true') {
-                const randomCode = localStorage.getItem('randomCode');
-                document.getElementById('surveyForm').innerHTML = `
-                    <p>You have already completed this survey.</p>
-                    <p>Your survey code is: <strong id="randomCode">${randomCode}</strong></p>
-                    <p>Please submit this code on MTurk.</p>
-                `;
-            }
-        };
-    
         function submitSelection() {
             let results = {};
             for (let i of imageIndices) {
                 const selectedImage = document.querySelector(`input[name="image${i}"]:checked`);
                 results[`image${i}`] = selectedImage ? selectedImage.value : "No selection";
             }
-    
-            const randomCode = generateRandomCode();
-            localStorage.setItem('randomCode', randomCode);
-    
-            results['randomCode'] = randomCode;
-    
-            // 설문 제출 상태를 localStorage에 저장
-            localStorage.setItem('surveySubmitted', 'true');
-            
+
             fetch("https://script.google.com/macros/s/AKfycbx2A64enDdcMFEqPrIMY16phIjFsdHWRhQ9HJJrurWjTB1wFR8bXNmI15vnYIeRPmc1FA/exec", {
                 method: "POST",
                 mode: 'no-cors', 
@@ -135,7 +110,7 @@
                 document.getElementById('submitBtn').disabled = false;
                 alert("Submission failed! Please try again.");
             });
-    
+
             document.getElementById('submitBtn').disabled = true;
         }
 
@@ -150,16 +125,6 @@
                 }
             }
             document.getElementById('submitBtn').disabled = !allSelected;
-        }
-
-        // 랜덤 코드 생성 함수
-        function generateRandomCode() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let code = '';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
         }
     </script>
 
