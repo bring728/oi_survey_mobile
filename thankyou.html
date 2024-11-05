@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Thank You for Your Submission!</h1>
+    <p>Your survey code is: <strong id="randomCode"></strong></p>
+    <p>Please submit this code on MTurk.</p>
+
+    <script>
+        // localStorage에서 랜덤 코드 가져오기
+        const randomCode = localStorage.getItem('randomCode');
+        if (randomCode) {
+            document.getElementById('randomCode').textContent = randomCode; // 화면에 코드 표시
+        }
+
+        // Prevent back button navigation
+        window.history.pushState(null, "", window.location.href);
+        window.addEventListener('popstate', function () {
+            window.history.pushState(null, "", window.location.href);
+        });
+    </script>
+
+</body>
+</html>
